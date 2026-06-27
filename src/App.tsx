@@ -200,6 +200,25 @@ export default function App() {
       body: JSON.stringify({ fileName: name, fileType: type, size, base64 })
     });
 
+    if (!response.ok) {
+      const text = await response.text();
+      let errorMsg = "Failed to process document.";
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed && parsed.error) {
+          errorMsg = parsed.error;
+        }
+      } catch (e) {
+        // If it's a Vercel function error page, make it clean and readable
+        if (text.includes("An error occurred") || text.includes("server error")) {
+          errorMsg = "A serverless function error occurred in Vercel. Please ensure you have set your GEMINI_API_KEY environment variable in your Vercel project settings dashboard.";
+        } else {
+          errorMsg = text.slice(0, 150) || `Server returned error status ${response.status}`;
+        }
+      }
+      throw new Error(errorMsg);
+    }
+
     const data = await response.json();
     if (data.error) throw new Error(data.error);
 

@@ -84,6 +84,11 @@ export default function DashboardTab({
     setUploading(true);
     setUploadError("");
     try {
+      // Vercel serverless request body size limit is 4.5MB
+      if (file.size > 3.5 * 1024 * 1024) {
+        throw new Error("To ensure smooth processing on Vercel's serverless environment, please upload files smaller than 3.5MB. For larger documents, try splitting them into smaller parts.");
+      }
+
       const base64String = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);

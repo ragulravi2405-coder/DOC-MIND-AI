@@ -4,7 +4,6 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import mammoth from "mammoth";
 import dotenv from "dotenv";
-import { PDFParse } from "pdf-parse";
 
 dotenv.config();
 
@@ -96,43 +95,14 @@ app.post("/api/documents/process", async (req, res) => {
       const result = await mammoth.extractRawText({ buffer });
       promptPartText = `Analyze this DOCX text content and construct the knowledge base:\n\n${result.value}`;
     } else if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
-      let parser: PDFParse | null = null;
-      try {
-        const buffer = Buffer.from(base64, "base64");
-        parser = new PDFParse({ data: new Uint8Array(buffer) });
-        const textResult = await parser.getText();
-        const extractedText = textResult.text || "";
-        if (extractedText.trim().length > 0) {
-          promptPartText = `Analyze this PDF text content and construct the knowledge base:\n\n${extractedText}`;
-        } else {
-          // Fallback to inlineData for scanned or image-only PDFs
-          inlineDataPart = {
-            inlineData: {
-              data: base64,
-              mimeType: "application/pdf",
-            },
-          };
-          promptPartText = "Analyze this PDF document and construct the knowledge base.";
-        }
-      } catch (pdfErr) {
-        console.warn("PDFParse failed, falling back to inlineData:", pdfErr);
-        // Fallback to inlineData if parsing fails
-        inlineDataPart = {
-          inlineData: {
-            data: base64,
-            mimeType: "application/pdf",
-          },
-        };
-        promptPartText = "Analyze this PDF document and construct the knowledge base.";
-      } finally {
-        if (parser) {
-          try {
-            await parser.destroy();
-          } catch (destroyErr) {
-            console.error("Failed to destroy PDFParse:", destroyErr);
-          }
-        }
-      }
+      // Use Gemini's powerful native multimodal PDF understanding instead of local text extraction
+      inlineDataPart = {
+        inlineData: {
+          data: base64,
+          mimeType: "application/pdf",
+        },
+      };
+      promptPartText = "Analyze this PDF document, extract all text and formatting, and construct the knowledge base.";
     } else if (fileType.startsWith("image/") || /\.(jpg|jpeg|png)$/i.test(fileName)) {
       const mime = fileType.startsWith("image/") ? fileType : "image/jpeg";
       inlineDataPart = {
