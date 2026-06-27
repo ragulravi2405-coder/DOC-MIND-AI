@@ -43,6 +43,7 @@ export default function TeacherTab({ document, language }: TeacherTabProps) {
   const [loading, setLoading] = useState(false);
   const [paper, setPaper] = useState<GeneratedPaper | null>(null);
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
+  const [errorBanner, setErrorBanner] = useState("");
   const [editingText, setEditingText] = useState("");
 
   if (!document) {
@@ -141,7 +142,7 @@ export default function TeacherTab({ document, language }: TeacherTabProps) {
 
     } catch (err) {
       console.error(err);
-      alert("Error generating teaching question bank.");
+      setErrorBanner("Error generating teaching question bank. Please check your network and Gemini API keys.");
     } finally {
       setLoading(false);
     }
@@ -228,6 +229,22 @@ End of Academic Package.
 
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
+      
+      {/* Dynamic Error Banner */}
+      {errorBanner && (
+        <div className="bg-rose-500/10 border border-rose-500/20 px-6 py-3.5 rounded-xl flex items-center justify-between text-xs text-rose-600 dark:text-rose-400">
+          <div className="flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorBanner}</span>
+          </div>
+          <button 
+            onClick={() => setErrorBanner("")}
+            className="text-rose-500 hover:text-rose-700 font-bold ml-2 text-sm leading-none"
+          >
+            ×
+          </button>
+        </div>
+      )}
       
       {/* Configuration Hub */}
       {!paper && !loading && (

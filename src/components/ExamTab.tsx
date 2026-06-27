@@ -27,6 +27,7 @@ export default function ExamTab({ document, userId, onSaveExam, language }: Exam
   // Evaluation States
   const [loadingEvaluation, setLoadingEvaluation] = useState(false);
   const [evaluationResult, setEvaluationResult] = useState<any | null>(null);
+  const [errorBanner, setErrorBanner] = useState("");
 
   if (!document) {
     return (
@@ -49,8 +50,9 @@ export default function ExamTab({ document, userId, onSaveExam, language }: Exam
   );
 
   const handleStartExam = () => {
+    setErrorBanner("");
     if (filteredQuestions.length === 0) {
-      alert("No questions available for this difficulty level. Please choose another difficulty.");
+      setErrorBanner("No questions available for this difficulty level. Please choose another difficulty.");
       return;
     }
     setAnswers({});
@@ -162,7 +164,7 @@ export default function ExamTab({ document, userId, onSaveExam, language }: Exam
       setExamStarted(false);
     } catch (err) {
       console.error(err);
-      alert("Error submitting and evaluating the exam.");
+      setErrorBanner("Error submitting and evaluating the exam. Please check your network and Gemini API keys.");
     } finally {
       setLoadingEvaluation(false);
     }
@@ -213,6 +215,22 @@ End of Report. Keep learning with DOC-MIND AI!
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
+      
+      {/* Dynamic Error Banner */}
+      {errorBanner && (
+        <div className="bg-rose-500/10 border border-rose-500/20 px-6 py-3.5 rounded-xl flex items-center justify-between text-xs text-rose-600 dark:text-rose-400">
+          <div className="flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorBanner}</span>
+          </div>
+          <button 
+            onClick={() => setErrorBanner("")}
+            className="text-rose-500 hover:text-rose-700 font-bold ml-2 text-sm leading-none"
+          >
+            ×
+          </button>
+        </div>
+      )}
       
       {/* Configuration Frame */}
       {!examStarted && !evaluationResult && (

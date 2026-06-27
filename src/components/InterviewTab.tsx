@@ -47,6 +47,7 @@ export default function InterviewTab({ document, userId, onSaveInterview, langua
   // Loading/Results States
   const [submittingAnswer, setSubmittingAnswer] = useState(false);
   const [finalReport, setFinalReport] = useState<any | null>(null);
+  const [errorBanner, setErrorBanner] = useState("");
 
   if (!document) {
     return (
@@ -77,8 +78,9 @@ export default function InterviewTab({ document, userId, onSaveInterview, langua
   const activeQuestion = activeQuestions[currentQuestionIndex];
 
   const handleStartInterview = () => {
+    setErrorBanner("");
     if (activeQuestions.length === 0) {
-      alert("No questions found for this configuration. Try a different combination.");
+      setErrorBanner("No questions found for this configuration. Try a different combination.");
       return;
     }
     setResponsesLog([]);
@@ -110,7 +112,7 @@ export default function InterviewTab({ document, userId, onSaveInterview, langua
   const toggleListening = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("Speech Recognition not supported in this browser. Please use Google Chrome or Edge.");
+      setErrorBanner("Speech Recognition not supported in this browser. Please use Google Chrome or Edge.");
       return;
     }
 
@@ -137,8 +139,9 @@ export default function InterviewTab({ document, userId, onSaveInterview, langua
 
   // 3. Submit question answer
   const handleSubmitAnswer = async () => {
+    setErrorBanner("");
     if (!userAnswerInput.trim()) {
-      alert("Please enter or record an answer before continuing.");
+      setErrorBanner("Please enter or record an answer before continuing.");
       return;
     }
 
@@ -223,7 +226,7 @@ export default function InterviewTab({ document, userId, onSaveInterview, langua
       }
     } catch (err: any) {
       console.error(err);
-      alert("Evaluation failed. Please try again.");
+      setErrorBanner("Evaluation failed. Please check your network and Gemini API keys.");
       setSubmittingAnswer(false);
     }
   };
@@ -274,6 +277,22 @@ Keep practicing to master your next interview!
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6 space-y-6">
+      
+      {/* Dynamic Error Banner */}
+      {errorBanner && (
+        <div className="bg-rose-500/10 border border-rose-500/20 px-6 py-3.5 rounded-xl flex items-center justify-between text-xs text-rose-600 dark:text-rose-400">
+          <div className="flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{errorBanner}</span>
+          </div>
+          <button 
+            onClick={() => setErrorBanner("")}
+            className="text-rose-500 hover:text-rose-700 font-bold ml-2 text-sm leading-none"
+          >
+            ×
+          </button>
+        </div>
+      )}
       
       {/* 1. Setup Frame */}
       {!interviewStarted && !finalReport && (

@@ -34,13 +34,15 @@ import {
   Check, 
   ArrowRight,
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  Menu
 } from "lucide-react";
 
 export default function App() {
   const [user, setUser] = useState<UserProfile | null>(getActiveUser());
   const [authMode, setAuthMode] = useState<"login" | "register" | "forgot">("login");
   const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Core Data States
   const [documents, setDocuments] = useState<EduDocument[]>([]);
@@ -527,15 +529,25 @@ export default function App() {
         darkMode={darkMode}
         setDarkMode={setDarkMode}
         onLogout={handleLogout}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
       />
 
       {/* Primary Workspace Frame */}
       <div className="flex-1 flex flex-col bg-slate-50 dark:bg-slate-950 overflow-hidden relative">
         
         {/* Top bar with quick settings / profile modal triggers */}
-        <header className="h-16 border-b border-slate-200/60 dark:border-slate-900 bg-white dark:bg-slate-900/60 backdrop-blur-md flex items-center justify-between px-6 z-10 shrink-0">
-          <div>
-            <h1 className="text-sm font-bold text-slate-800 dark:text-slate-100 tracking-tight font-sans">
+        <header className="h-16 border-b border-slate-200/60 dark:border-slate-900 bg-white dark:bg-slate-900/60 backdrop-blur-md flex items-center justify-between px-4 md:px-6 z-10 shrink-0">
+          <div className="flex items-center space-x-3 overflow-hidden">
+            {/* Hamburger Button for Mobile */}
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 -ml-1 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg md:hidden shrink-0"
+              aria-label="Open Sidebar"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 tracking-tight font-sans truncate">
               {activeTab === "dashboard" && "Platform Analytics & Materials"}
               {activeTab === "notes" && "Grounded Course Summaries & Flashcards"}
               {activeTab === "chat" && "Grounded AI Tutor Chat"}

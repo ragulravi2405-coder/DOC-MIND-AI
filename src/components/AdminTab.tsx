@@ -31,6 +31,7 @@ interface AdminTabProps {
 export default function AdminTab({ currentAdmin, documents, onDeleteDocument }: AdminTabProps) {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [errorBanner, setErrorBanner] = useState("");
 
   useEffect(() => {
     async function loadData() {
@@ -79,8 +80,9 @@ export default function AdminTab({ currentAdmin, documents, onDeleteDocument }: 
   };
 
   const handleDeleteUser = (uid: string) => {
+    setErrorBanner("");
     if (uid === currentAdmin.uid) {
-      alert("You cannot delete your own admin account.");
+      setErrorBanner("You cannot delete your own admin account.");
       return;
     }
     const filtered = users.filter((u) => u.uid !== uid);
@@ -92,6 +94,23 @@ export default function AdminTab({ currentAdmin, documents, onDeleteDocument }: 
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-8">
+      
+      {/* Dynamic Error Banner */}
+      {errorBanner && (
+        <div className="bg-rose-500/10 border border-rose-500/20 px-6 py-3.5 rounded-xl flex items-center justify-between text-xs text-rose-600 dark:text-rose-400">
+          <div className="flex items-center space-x-2">
+            <ShieldAlert className="w-4 h-4 shrink-0" />
+            <span>{errorBanner}</span>
+          </div>
+          <button 
+            onClick={() => setErrorBanner("")}
+            className="text-rose-500 hover:text-rose-700 font-bold ml-2 text-sm leading-none"
+          >
+            ×
+          </button>
+        </div>
+      )}
+      
       {/* Header */}
       <div>
         <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100 tracking-tight">

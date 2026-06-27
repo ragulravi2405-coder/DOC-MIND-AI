@@ -35,6 +35,7 @@ export default function ChatTab({ document, language }: ChatTabProps) {
   
   // Voice Input (Speech Recognition) State
   const [isListening, setIsListening] = useState(false);
+  const [speechError, setSpeechError] = useState("");
   const recognitionRef = useRef<any>(null);
 
   // Audio Playback / TTS State
@@ -87,7 +88,7 @@ export default function ChatTab({ document, language }: ChatTabProps) {
   const speakText = (text: string, messageId: string) => {
     const synth = window.speechSynthesis;
     if (!synth) {
-      alert("Text-to-Speech is not supported in this browser.");
+      setSpeechError("Text-to-Speech is not supported in this browser.");
       return;
     }
 
@@ -119,7 +120,7 @@ export default function ChatTab({ document, language }: ChatTabProps) {
   const toggleListening = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("Speech Recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.");
+      setSpeechError("Speech Recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.");
       return;
     }
 
@@ -287,6 +288,19 @@ export default function ChatTab({ document, language }: ChatTabProps) {
             </button>
           </div>
         </div>
+
+        {/* Speech Error Banner */}
+        {speechError && (
+          <div className="bg-rose-500/10 border-b border-rose-500/20 px-6 py-2.5 flex items-center justify-between text-xs text-rose-600 dark:text-rose-400">
+            <span>{speechError}</span>
+            <button 
+              onClick={() => setSpeechError("")}
+              className="text-rose-500 hover:text-rose-700 font-bold ml-2 text-sm leading-none"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         {/* Message Stream */}
         <div className="flex-1 p-6 overflow-y-auto space-y-4">

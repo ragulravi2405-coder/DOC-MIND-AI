@@ -1,157 +1,20 @@
-# EduMind AI
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+</div>
 
-EduMind AI is a modern web-based learning platform designed to help students prepare for exams, organize study materials, practice interviews, and interact with an intelligent learning assistant. The application provides an intuitive dashboard and multiple learning modules in a clean and responsive interface.
+# Run and deploy your AI Studio app
 
----
+This contains everything you need to run your app locally.
 
-## Features
+View your app in AI Studio: https://ai.studio/apps/9c6e4d49-27eb-4bfb-9f8e-4fd200ced66b
 
-- 📊 Student Dashboard
-- 💬 Smart Learning Assistant
-- 📝 Exam Preparation
-- 📚 Notes Management
-- 🎓 Teacher Panel
-- 👨‍💼 Admin Panel
-- 🎤 Interview Preparation
-- 🔥 Firebase Integration
-- 📱 Responsive UI
+## Run Locally
 
----
+**Prerequisites:**  Node.js
 
-## Tech Stack
 
-### Frontend
-- React
-- TypeScript
-- Vite
-- CSS
-
-### Backend
-- Node.js
-- Express
-
-### Database & Services
-- Firebase
-
-### AI Integration
-- Gemini API
-
----
-
-## Prerequisites
-
-Before running the project, make sure you have installed:
-
-- Node.js (v18 or above)
-- npm
-
----
-
-## Installation
-
-### 1. Clone the repository
-
-```bash
-git clone <your-github-repository-url>
-```
-
-### 2. Navigate into the project
-
-```bash
-cd edumind-ai
-```
-
-### 3. Install dependencies
-
-```bash
-npm install
-```
-
----
-
-## Environment Variables
-
-Create a `.env` file in the project root and add the following:
-
-```env
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-```
-
-Replace `YOUR_GEMINI_API_KEY` with your own Gemini API key.
-
----
-
-## Run the Project
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-The application will start on your local development server.
-
----
-
-## Build for Production
-
-```bash
-npm run build
-```
-
----
-
-## Start Production Server
-
-```bash
-npm start
-```
-
----
-
-## Project Structure
-
-```
-edumind-ai/
-│
-├── src/
-│   ├── components/
-│   ├── lib/
-│   ├── App.tsx
-│   └── main.tsx
-│
-├── assets/
-├── server.ts
-├── package.json
-├── vite.config.ts
-└── README.md
-```
-
----
-
-## Key Modules
-
-- Dashboard
-- Exam Preparation
-- Notes
-- Teacher Panel
-- Admin Panel
-- Interview Preparation
-- Learning Assistant
-
----
-
-## Future Improvements
-
-- User Authentication
-- Progress Tracking
-- Performance Analytics
-- File Upload Enhancements
-- Additional Learning Resources
-- Personalized Study Plans
-
----
-
-## License
-
-This project is developed for educational and learning purposes.
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
