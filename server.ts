@@ -18,7 +18,7 @@ async function generateContentWithFallback(
   retries = 3,
   delayMs = 1500
 ): Promise<any> {
-  const modelsToTry = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-3.1-flash-lite"];
+  const modelsToTry = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.5-pro", "gemini-1.5-pro"];
   let lastError: any = null;
 
   for (const model of modelsToTry) {
