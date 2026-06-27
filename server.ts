@@ -45,27 +45,31 @@ const PORT = 3000;
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
-// Lazy-loaded Gemini AI client
-let aiInstance: GoogleGenAI | null = null;
-function getGeminiClient(): GoogleGenAI {
-  if (!aiInstance) {
-    const key = process.env.GEMINI_API_KEY;
-    if (!key) {
-      throw new Error(
-        "GEMINI_API_KEY environment variable is missing. Please define it in the Secrets panel."
-      );
-    }
-    aiInstance = new GoogleGenAI({
-      apiKey: key,
-      httpOptions: {
-        headers: {
-          "User-Agent": "aistudio-build",
-        },
-      },
-    });
+// Lazy-loaded Gemini AI client with dynamic header key fallback
+function getGeminiClient(req?: express.Request): GoogleGenAI {
+  const customKey = req?.headers ? (req.headers["x-gemini-api-key"] as string) : undefined;
+  const key = customKey || process.env.GEMINI_API_KEY;
+  if (!key) {
+    throw new Error(
+      "GEMINI_API_KEY environment variable is missing. If you deployed this app on Render (or another cloud provider), please define the environment variable 'GEMINI_API_KEY' with your Google AI Studio API key in your Render Environment Variables dashboard. Alternatively, you can configure your own API Key under the DOC-MIND AI settings in My Profile."
+    );
   }
-  return aiInstance;
+  return new GoogleGenAI({
+    apiKey: key,
+    httpOptions: {
+      headers: {
+        "User-Agent": "aistudio-build",
+      },
+    },
+  });
 }
+
+// Config Status API (check if server API key is configured)
+app.get("/api/config/status", (req, res) => {
+  res.json({
+    hasServerApiKey: !!process.env.GEMINI_API_KEY
+  });
+});
 
 // 1. Process Document API
 app.post("/api/documents/process", async (req, res) => {
@@ -76,7 +80,7 @@ app.post("/api/documents/process", async (req, res) => {
       return;
     }
 
-    const ai = getGeminiClient();
+    const ai = getGeminiClient(req);
     let promptPartText = "";
     let inlineDataPart: any = null;
 
@@ -222,8 +226,8 @@ app.post("/api/gemini/chat", async (req, res) => {
       return;
     }
 
-    const ai = getGeminiClient();
-    const systemInstruction = `You are EduMind AI, a premium intelligent document learning coach.
+    const ai = getGeminiClient(req);
+    const systemInstruction = `You are DOC-MIND AI, a premium intelligent document learning coach.
     Your absolute golden rule: You MUST generate answers and responses ONLY from the uploaded document content provided below.
     If the answer or information is not found in the document content, you must clearly and humbly state: "I'm sorry, but that information is not available in the uploaded document." Do not hallucinate or pull outside knowledge.
     
@@ -277,7 +281,7 @@ app.post("/api/gemini/evaluate", async (req, res) => {
       return;
     }
 
-    const ai = getGeminiClient();
+    const ai = getGeminiClient(req);
     const evaluationPrompt = `
     You are an AI assessment auditor. Evaluate the student's answer to the following question.
     
@@ -339,4 +343,8 @@ async function startServer() {
   });
 }
 
-startServer();
+if (process.env.VERCEL !== "1") {
+  startServer();
+}
+
+export default app;

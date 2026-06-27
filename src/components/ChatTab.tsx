@@ -175,7 +175,10 @@ export default function ChatTab({ document, language }: ChatTabProps) {
     try {
       const response = await fetch("/api/gemini/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-Gemini-API-Key": localStorage.getItem("gemini_api_key") || ""
+        },
         body: JSON.stringify({
           message: userMsg.text,
           history: messages.slice(-10), // send last 10 turns as context

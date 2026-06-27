@@ -146,7 +146,10 @@ export default function InterviewTab({ document, userId, onSaveInterview, langua
     try {
       const response = await fetch("/api/gemini/evaluate", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "X-Gemini-API-Key": localStorage.getItem("gemini_api_key") || ""
+        },
         body: JSON.stringify({
           question: activeQuestion.question,
           userAnswer: userAnswerInput,

@@ -95,7 +95,10 @@ export default function ExamTab({ document, userId, onSaveExam, language }: Exam
           try {
             const evRes = await fetch("/api/gemini/evaluate", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: { 
+                "Content-Type": "application/json",
+                "X-Gemini-API-Key": localStorage.getItem("gemini_api_key") || ""
+              },
               body: JSON.stringify({
                 question: question.question,
                 userAnswer: userAnswer,

@@ -33,7 +33,8 @@ import {
   EyeOff, 
   Check, 
   ArrowRight,
-  Loader2
+  Loader2,
+  AlertTriangle
 } from "lucide-react";
 
 export default function App() {
@@ -65,6 +66,24 @@ export default function App() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileNameInput, setProfileNameInput] = useState("");
   const [profileRoleInput, setProfileRoleInput] = useState<UserRole>("student");
+  const [customApiKey, setCustomApiKey] = useState(() => localStorage.getItem("gemini_api_key") || "");
+  const [hasServerApiKey, setHasServerApiKey] = useState(true);
+
+  // Check backend config status on mount
+  useEffect(() => {
+    const checkConfig = async () => {
+      try {
+        const response = await fetch("/api/config/status");
+        const data = await response.json();
+        if (data && typeof data.hasServerApiKey === "boolean") {
+          setHasServerApiKey(data.hasServerApiKey);
+        }
+      } catch (err) {
+        console.error("Failed to check server config status:", err);
+      }
+    };
+    checkConfig();
+  }, []);
 
   // Load all user collections once authenticated
   useEffect(() => {
@@ -174,7 +193,10 @@ export default function App() {
     if (!user) return;
     const response = await fetch("/api/documents/process", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "X-Gemini-API-Key": localStorage.getItem("gemini_api_key") || ""
+      },
       body: JSON.stringify({ fileName: name, fileType: type, size, base64 })
     });
 
@@ -235,6 +257,7 @@ export default function App() {
     };
     setUser(updated);
     localStorage.setItem("edumind_current_user", JSON.stringify(updated));
+    localStorage.setItem("gemini_api_key", customApiKey);
     
     // update local user index as well
     const localUsersList = JSON.parse(localStorage.getItem("edumind_users") || "[]");
@@ -515,6 +538,24 @@ export default function App() {
           </div>
         </header>
 
+        {/* API Key Missing Alert Banner */}
+        {!hasServerApiKey && !customApiKey && (
+          <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-3 flex items-center justify-between gap-4 shrink-0">
+            <div className="flex items-center space-x-3">
+              <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
+              <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                <span className="font-bold">Google Gemini API Key is missing:</span> This app is deployed on a public platform (like GitHub or Render) but does not have the <code className="bg-amber-500/10 px-1.5 py-0.5 rounded font-mono text-[10px]">GEMINI_API_KEY</code> environment variable set.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowProfileModal(true)}
+              className="text-xs bg-amber-500 hover:bg-amber-600 text-white font-semibold px-3 py-1.5 rounded-lg shadow-sm transition shrink-0"
+            >
+              Configure API Key
+            </button>
+          </div>
+        )}
+
         {/* Dynamic Tab Body */}
         <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950/40">
           {activeTab === "dashboard" && (
@@ -592,6 +633,20 @@ export default function App() {
                   onChange={(e) => setProfileNameInput(e.target.value)}
                   className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs rounded-xl p-3 focus:outline-none dark:text-white"
                 />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Custom Gemini API Key (Optional)</label>
+                <input
+                  type="password"
+                  placeholder="AIzaSy..."
+                  value={customApiKey}
+                  onChange={(e) => setCustomApiKey(e.target.value)}
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs rounded-xl p-3 focus:outline-none dark:text-white"
+                />
+                <p className="text-[9px] text-slate-400 mt-1 leading-normal">
+                  Required if the server's GEMINI_API_KEY environment variable is missing (e.g. on Render). You can also add it in Render's dashboard.
+                </p>
               </div>
             </div>
 
