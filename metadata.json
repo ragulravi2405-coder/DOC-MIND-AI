@@ -1,0 +1,6 @@
+{
+  "name": "DOC-MIND AI",
+  "description": "Intelligent Document Learning & Assessment Platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

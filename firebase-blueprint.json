@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account information and roles",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["student", "teacher", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Document": {
+      "title": "Document",
+      "description": "Uploaded course materials or documents with AI extracted resources",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "size": { "type": "number" },
+        "extractedText": { "type": "string" },
+        "summary": { "type": "string" },
+        "importantTopics": { "type": "string" },
+        "keywords": { "type": "string" },
+        "flashcards": { "type": "string" },
+        "revisionNotes": { "type": "string" },
+        "examQuestions": { "type": "string" },
+        "interviewQuestions": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "name", "type"]
+    },
+    "Exam": {
+      "title": "Mock Exam Session",
+      "description": "Completed mock exam and quiz sessions with AI feedback",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "documentId": { "type": "string" },
+        "documentName": { "type": "string" },
+        "difficulty": { "type": "string" },
+        "score": { "type": "number" },
+        "totalQuestions": { "type": "number" },
+        "answers": { "type": "string" },
+        "feedback": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "documentId", "score"]
+    },
+    "Interview": {
+      "title": "Mock Interview Session",
+      "description": "AI-conducted mock interview session logs",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "documentId": { "type": "string" },
+        "documentName": { "type": "string" },
+        "mode": { "type": "string" },
+        "type": { "type": "string" },
+        "score": { "type": "number" },
+        "responses": { "type": "string" },
+        "feedback": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "documentId", "score"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "User",
+      "description": "Private profile of authenticated users"
+    },
+    "/documents/{documentId}": {
+      "schema": "Document",
+      "description": "Uploaded content documents and generated notes"
+    },
+    "/exams/{examId}": {
+      "schema": "Exam",
+      "description": "Completed quiz or exam records"
+    },
+    "/interviews/{interviewId}": {
+      "schema": "Interview",
+      "description": "Mock interview logs"
+    }
+  }
+}
