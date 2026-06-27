@@ -7,34 +7,60 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// Helper to retry Gemini operations under temporary 503/429/UNAVAILABLE spikes
-async function callGeminiWithRetry<T>(fn: () => Promise<T>, retries = 3, delayMs = 1500): Promise<T> {
-  let attempt = 0;
-  while (true) {
-    try {
-      return await fn();
-    } catch (error: any) {
-      attempt++;
-      const isRetryable = 
-        error?.status === "UNAVAILABLE" || 
-        error?.code === 503 ||
-        error?.status === 503 ||
-        error?.message?.includes("503") ||
-        error?.message?.includes("UNAVAILABLE") ||
-        error?.message?.includes("high demand") ||
-        error?.message?.includes("resource exhausted") ||
-        error?.message?.includes("429") ||
-        error?.status === "RESOURCE_EXHAUSTED";
+// Robust helper to perform Gemini generation with model fallbacks and exponential retries
+// This prevents 503 "This model is currently experiencing high demand" or 429 rate limits from breaking the user flow.
+async function generateContentWithFallback(
+  ai: GoogleGenAI,
+  params: {
+    contents: any;
+    config?: any;
+  },
+  retries = 3,
+  delayMs = 1500
+): Promise<any> {
+  const modelsToTry = ["gemini-3.5-flash", "gemini-flash-latest", "gemini-3.1-flash-lite"];
+  let lastError: any = null;
 
-      if (isRetryable && attempt <= retries) {
-        console.warn(`[Gemini SDK] Temporary high load/503 (attempt ${attempt}/${retries}). Retrying in ${delayMs}ms...`);
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-        delayMs *= 2; // exponential backoff
-        continue;
+  for (const model of modelsToTry) {
+    let attempt = 0;
+    let currentDelay = delayMs;
+    while (attempt <= retries) {
+      try {
+        console.log(`[Gemini SDK] Trying model ${model} (attempt ${attempt + 1}/${retries + 1})...`);
+        const response = await ai.models.generateContent({
+          model,
+          ...params,
+        });
+        return response;
+      } catch (error: any) {
+        lastError = error;
+        attempt++;
+
+        const isRetryable = 
+          error?.status === "UNAVAILABLE" || 
+          error?.code === 503 ||
+          error?.status === 503 ||
+          error?.message?.includes("503") ||
+          error?.message?.includes("UNAVAILABLE") ||
+          error?.message?.includes("high demand") ||
+          error?.message?.includes("resource exhausted") ||
+          error?.message?.includes("429") ||
+          error?.status === "RESOURCE_EXHAUSTED";
+
+        if (isRetryable && attempt <= retries) {
+          console.warn(`[Gemini SDK] Temporary load/503 for ${model} (attempt ${attempt}/${retries}). Retrying in ${currentDelay}ms...`);
+          await new Promise((resolve) => setTimeout(resolve, currentDelay));
+          currentDelay *= 2; // exponential backoff
+          continue;
+        }
+
+        console.warn(`[Gemini SDK] Model ${model} failed with: ${error?.message || error}. trying next model in list...`);
+        break; // try the next model
       }
-      throw error;
     }
   }
+
+  throw lastError;
 }
 
 const app = express();
@@ -169,15 +195,12 @@ app.post("/api/documents/process", async (req, res) => {
     });
 
     // Generate indexing bundle
-    const response = await callGeminiWithRetry(() =>
-      ai.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents: { parts },
-        config: {
-          responseMimeType: "application/json",
-        },
-      })
-    );
+    const response = await generateContentWithFallback(ai, {
+      contents: { parts },
+      config: {
+        responseMimeType: "application/json",
+      },
+    });
 
     const parsedData = JSON.parse(response.text || "{}");
     res.json(parsedData);
@@ -225,15 +248,12 @@ app.post("/api/gemini/chat", async (req, res) => {
       parts: [{ text: message }],
     });
 
-    const response = await callGeminiWithRetry(() =>
-      ai.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents,
-        config: {
-          systemInstruction,
-        },
-      })
-    );
+    const response = await generateContentWithFallback(ai, {
+      contents,
+      config: {
+        systemInstruction,
+      },
+    });
 
     res.json({ text: response.text });
   } catch (error: any) {
@@ -274,15 +294,12 @@ app.post("/api/gemini/evaluate", async (req, res) => {
     }
     `;
 
-    const response = await callGeminiWithRetry(() =>
-      ai.models.generateContent({
-        model: "gemini-3.5-flash",
-        contents: evaluationPrompt,
-        config: {
-          responseMimeType: "application/json",
-        },
-      })
-    );
+    const response = await generateContentWithFallback(ai, {
+      contents: evaluationPrompt,
+      config: {
+        responseMimeType: "application/json",
+      },
+    });
 
     const result = JSON.parse(response.text || "{}");
     res.json(result);
