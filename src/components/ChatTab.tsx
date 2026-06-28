@@ -369,7 +369,7 @@ export default function ChatTab({ document, language }: ChatTabProps) {
               <div className="bg-slate-50 dark:bg-white/[0.02] text-slate-800 dark:text-slate-100 border border-slate-100 dark:border-white/10 rounded-2xl rounded-tl-none p-4 shadow-sm flex items-center space-x-3">
                 <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />
                 <span className="text-xs text-slate-400 font-medium font-mono">
-                  DOC-MIND AI is thinking...
+                  DOC - MIND AI is thinking...
                 </span>
               </div>
             </div>

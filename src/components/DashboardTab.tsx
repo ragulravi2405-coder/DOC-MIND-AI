@@ -236,7 +236,7 @@ export default function DashboardTab({
                   <Loader2 className="w-10 h-10 text-cyan-400 animate-spin mx-auto" />
                   <div>
                     <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                      DOC-MIND AI is Indexing Knowledge...
+                      DOC - MIND AI is Indexing Knowledge...
                     </p>
                     <p className="text-xs text-slate-400 mt-1">
                       Generating structured study summaries, flashcards, exams, and viva question pools.

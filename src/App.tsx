@@ -307,7 +307,7 @@ export default function App() {
             </div>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent">
-                DOC-MIND AI
+                DOC - MIND AI
               </h1>
               <p className="text-xs text-slate-400 mt-1">
                 Intelligent learning, structured summaries & voice mock assessments.

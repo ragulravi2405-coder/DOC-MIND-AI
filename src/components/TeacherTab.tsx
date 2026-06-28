@@ -179,7 +179,7 @@ export default function TeacherTab({ document, language }: TeacherTabProps) {
 =========================================
 OFFICIAL QUESTION PAPER: ${paper.setName.toUpperCase()}
 =========================================
-DOC-MIND AI Academic Generation Hub
+DOC - MIND AI Academic Generation Hub
 Difficulty Index: ${paper.difficulty.toUpperCase()}
 Source Material: ${document.name}
 
@@ -222,7 +222,7 @@ End of Academic Package.
     const url = URL.createObjectURL(blob);
     const link = window.document.createElement("a");
     link.href = url;
-    link.download = `DOC-MIND_Question_Paper_${paper.setName}.txt`;
+    link.download = `DOC_-_MIND_Question_Paper_${paper.setName}.txt`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -372,7 +372,7 @@ End of Academic Package.
               Structuring Question Paper Packages
             </h4>
             <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-              DOC-MIND AI is building sections, aligning marks, and creating model solutions.
+              DOC - MIND AI is building sections, aligning marks, and creating model solutions.
             </p>
           </div>
         </div>

@@ -237,9 +237,9 @@ export default function InterviewTab({ document, userId, onSaveInterview, langua
 =========================================
 AI MOCK INTERVIEW LOGS & TRANSCRIPT
 =========================================
-DOC-MIND AI Intelligent Assessment Suite
+DOC - MIND AI Intelligent Assessment Suite
 
-Interviewer: DOC-MIND AI Grounded Recruiter
+Interviewer: DOC - MIND AI Grounded Recruiter
 Candidate User ID: ${userId}
 Interview Mode: ${mode.toUpperCase()}
 Interview Type: ${type.toUpperCase()}

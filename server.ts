@@ -76,7 +76,7 @@ function getGeminiClient(req?: express.Request): GoogleGenAI {
   const key = customKey || process.env.GEMINI_API_KEY;
   if (!key) {
     throw new Error(
-      "GEMINI_API_KEY environment variable is missing. If you deployed this app on Render (or another cloud provider), please define the environment variable 'GEMINI_API_KEY' with your Google AI Studio API key in your Render Environment Variables dashboard. Alternatively, you can configure your own API Key under the DOC-MIND AI settings in My Profile."
+      "GEMINI_API_KEY environment variable is missing. If you deployed this app on Render (or another cloud provider), please define the environment variable 'GEMINI_API_KEY' with your Google AI Studio API key in your Render Environment Variables dashboard. Alternatively, you can configure your own API Key under the DOC - MIND AI settings in My Profile."
     );
   }
   return new GoogleGenAI({
@@ -220,7 +220,7 @@ app.post("/api/gemini/chat", async (req, res) => {
     }
 
     const ai = getGeminiClient(req);
-    const systemInstruction = `You are DOC-MIND AI, a premium intelligent document learning coach.
+    const systemInstruction = `You are DOC - MIND AI, a premium intelligent document learning coach.
     Your absolute golden rule: You MUST generate answers and responses ONLY from the uploaded document content provided below.
     If the answer or information is not found in the document content, you must clearly and humbly state: "I'm sorry, but that information is not available in the uploaded document." Do not hallucinate or pull outside knowledge.
     

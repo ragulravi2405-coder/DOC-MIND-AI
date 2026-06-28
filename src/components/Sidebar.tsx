@@ -80,7 +80,7 @@ export default function Sidebar({
             </div>
             <div>
               <h1 className="text-lg font-bold bg-gradient-to-r from-white via-cyan-200 to-cyan-400 bg-clip-text text-transparent">
-                DOC-MIND AI
+                DOC - MIND AI
               </h1>
               <span className="text-[10px] uppercase tracking-widest text-cyan-400 font-semibold font-mono">
                 Intelligent Study

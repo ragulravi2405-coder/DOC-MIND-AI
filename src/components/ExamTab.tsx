@@ -177,7 +177,7 @@ export default function ExamTab({ document, userId, onSaveExam, language }: Exam
 =========================================
 MOCK EXAM PERFORMANCE REPORT
 =========================================
-DOC-MIND AI Intelligent Assessment Suite
+DOC - MIND AI Intelligent Assessment Suite
 
 Document Name: ${document.name}
 Exam Difficulty: ${difficulty.toUpperCase()}
@@ -201,7 +201,7 @@ DETAILED EVALUATION LOGS:
 ${evaluationResult.feedback}
 
 =========================================
-End of Report. Keep learning with DOC-MIND AI!
+End of Report. Keep learning with DOC - MIND AI!
     `;
 
     const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
@@ -407,7 +407,7 @@ End of Report. Keep learning with DOC-MIND AI!
               Evaluating Exam Answers
             </h4>
             <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-              DOC-MIND AI is auditing objective accuracy and scoring detailed open answers.
+              DOC - MIND AI is auditing objective accuracy and scoring detailed open answers.
             </p>
           </div>
         </div>
